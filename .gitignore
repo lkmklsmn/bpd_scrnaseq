@@ -47,3 +47,18 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# ---- reproducibility repo additions ----
+data/raw/
+data/external/
+!data/**/README.md
+!data/**/.gitkeep
+*.rds
+*.h5ad
+*.RData
+*.loom
+results/figures/*
+results/tables/*
+!results/**/.gitkeep
+.DS_Store
+Thumbs.db

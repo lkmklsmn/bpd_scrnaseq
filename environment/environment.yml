@@ -1,0 +1,18 @@
+name: bpd-scrnaseq
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.10
+  - scanpy
+  - anndata
+  - scrublet
+  - scipy
+  - numpy
+  - pandas
+  - h5py
+  - pip
+# R dependencies are managed with renv (see environment/renv.lock, generated via
+# renv::snapshot() on your machine). Key R packages: Seurat, DESeq2, glmmTMB, lme4,
+# lmerTest, fgsea, msigdbr, speckle, celda, zellkonverter, SingleCellExperiment,
+# babelgene, enrichR, readxl, writexl, pheatmap, ggplot2, ggrepel, data.table.
