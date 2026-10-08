@@ -2,11 +2,11 @@
 
 Reproducibility code for *"Single-cell RNA sequencing of CD45+ lung cells reveals the immune landscape of hyperoxia-induced bronchopulmonary dysplasia."*
 
-CD45+-enriched single-cell RNA-seq of a neonatal mouse hyperoxia model of BPD (32,780 cells, 4 pooled libraries, 2 per exposure), with cross-dataset validation in mouse and human BPD, nominating galectin-3 (*Lgals3* / LGALS3) as a candidate therapeutic target.
+CD45+-enriched single-cell RNA-seq of a neonatal mouse hyperoxia model of BPD.
 
 **Data:** <https://doi.org/10.5281/zenodo.23249196>
 
-Every panel in the paper is produced by exactly one script, and every script asserts the numbers quoted in the manuscript as it runs. A re-run that disagrees with the paper fails loudly rather than quietly producing different figures.
+Every panel in the paper is produced by exactly one script, and every script asserts the numbers quoted in the manuscript as it runs. 
 
 ## Quick start
 
@@ -95,26 +95,6 @@ environment/        conda environment + renv lockfile
 
 `config/paths.R` is the single place to change thresholds. The values used in the paper: pseudo-bulk DE at adjusted *P* < 0.25, markers at Bonferroni-adjusted *P* < 0.05 with `min.pct = 0.1`, top 100 markers per cell type in Figure 1C, global seed 1234.
 
-## Caveats — read before interpreting a re-run
-
-These are the places where the pipeline is not a pure function of its inputs. Each is handled explicitly in the relevant script; none is hidden.
-
-**The discovery cohort is 2 vs 2.** Four pooled libraries, two per exposure. Pseudo-bulk aggregation per library is replicate-aware but underpowered, which is why the manuscript uses an adjusted-*P* threshold of 0.25 and leans on external replication rather than on these p-values alone.
-
-**T-cell subtypes are derived at run time** (`07`). Unlike the macrophage UMAPs in `06`, which are descriptive only, the central T-cell result (γδ cells 7.9% → 16.5% of T cells) depends on which cells land in which subcluster. The original script attached labels to hardcoded cluster numbers, which mislabels every population if a package version renumbers them. This port instead assigns each label by the marker the cluster actually expresses most highly, then asserts the resulting subtype sizes. A renumbering is absorbed automatically; a genuinely different partition stops the script.
-
-**Figure 2C is a reconstruction** (`10`). It was produced interactively and the code was not saved. It is rebuilt from the description in the Results, including an explicit mapping of Hurskainen's immune clusters onto our nine populations. The reported ρ = 0.64 is checked as a **warning**, not an error, because that grouping is a reconstruction of an undocumented choice.
-
-**Figure S1 cannot be reproduced exactly** (`10`). It calls `FindAllMarkers` with `max.cells.per.ident = 100`, which subsamples at random, and the original script set no seed. The seed from `config/paths.R` is set here so the repository is at least self-consistent run to run.
-
-**Figure 6 depends on a frozen annotation** (`08`). `data/frozen/drug_target_annotation_2026-06-30.csv` came from an Open Targets GraphQL **v4** query on 30 June 2026. The responses were not retained and the schema has since changed, so the query cannot be replayed — hence the file is version-controlled rather than regenerated. The funnel it reproduces: 262 genes upregulated in alveolar macrophages → 257 human orthologs → 92 carrying a druggability annotation → 11 candidate targets. `aux_opentargets_requery.R` against the current schema returns a different list (202 rows, different tier vocabulary) and so does not reproduce the published figure.
-
-**Figure 7 uses the published model, deliberately** (`09`). For GSE220135 the manuscript's model is `lgals3 ~ offset(log(total)) + timepoint + treat`. A later revision adding a sex covariate and a per-infant random intercept moves that estimate from +0.33 (*P* = 0.095) to +0.27 (*P* = 0.23). The published model is the one reproduced here; the difference is noted in the script header.
-
-**Hallmark gene sets drift between MSigDB releases** (`05`). The NES values quoted in the Results are checked, but as warnings: a mismatch means the installed `msigdbr` differs from the one used for the paper. Restore the pinned version with `renv::restore()` before interpreting Fig 3B/3C or Table S4.
-
-**Sex is balanced but confounded with library** (`11`). One male and one female library per exposure, so sex cannot confound the exposure contrast, but a sex × exposure interaction cannot be tested. Figure S3 asks only whether the main findings depend on sex; it does not test for one.
-
 ## Data
 
 See [`data/README.md`](data/README.md) for accessions, the directory layout and provenance of each file.
@@ -124,12 +104,6 @@ In brief: single-cell data generated in this study are at GEO **GSE346853**; rea
 Only Figures 2C, 5E, 7 and S1 need the external datasets. Figures 1, 3, 4, 5A–D, 6, S2 and S3 run from the frozen object alone — a 1.6 GB download rather than 8.2 GB.
 
 Two inputs are version-controlled in `data/frozen/` rather than downloaded, because nothing in this pipeline can regenerate them: the Open Targets annotation described above, and the GSE220135 sample metadata.
-
-## Environment
-
-- **R:** `renv::restore()` from `environment/renv.lock`. *(Currently `renv.lock.PLACEHOLDER` — generate the real lockfile with `renv::snapshot()`.)* Key packages: Seurat, DESeq2, glmmTMB, lme4/lmerTest, fgsea, msigdbr, speckle, celda, zellkonverter, babelgene, readxl/writexl, pheatmap, ggplot2.
-- **Python** (provenance scripts only): `conda env create -f environment/environment.yml`.
-- `scripts/00_download_external.R` needs the `digest` package for checksum verification; without it, size checks still run.
 
 ## Citation
 
