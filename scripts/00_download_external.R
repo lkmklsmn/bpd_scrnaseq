@@ -17,10 +17,15 @@
 source(file.path("config", "paths.R"))
 
 # ---------------------------------------------------------------------------
-# FILL IN: direct-download URL for the archive, and its SHA-256.
-# A Google Drive share link must be converted to a direct-download form; the
-# browser "view" link returns an HTML interstitial, not the archive.
+# Deposited at Zenodo: https://doi.org/10.5281/zenodo.23249196
+#
+# Zenodo serves stable direct downloads of the form
+#   https://zenodo.org/records/<RECORD_ID>/files/<FILENAME>?download=1
+# which need no interstitial handling. Set archive_url to the archive's own
+# such URL once the record is public, or override it with BPD_ARCHIVE_URL.
 # ---------------------------------------------------------------------------
+zenodo_doi <- "10.5281/zenodo.23249196"
+zenodo_record <- "23249196"
 archive_url <- Sys.getenv("BPD_ARCHIVE_URL", unset = "")
 archive_sha256 <- "f4721ced89371c5c156774366e3b8310533e0bed751840aba627a935e45d318c"
 archive_name <- "bpd_scrnaseq_data.tar.gz"
@@ -90,9 +95,10 @@ if (!verify_only) {
   } else {
     if (!nzchar(archive_url)) {
       stop("No download URL configured.\n",
-           "Set archive_url in this script, or export BPD_ARCHIVE_URL, or ",
-           "place the files manually as listed in data/README.md.",
-           call. = FALSE)
+           "Download the data from https://doi.org/", zenodo_doi,
+           " and place it as listed in data/README.md, then re-run with ",
+           "--verify.\nAlternatively set archive_url in this script, or ",
+           "export BPD_ARCHIVE_URL.", call. = FALSE)
     }
     dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
     dest <- file.path(data_dir, archive_name)

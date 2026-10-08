@@ -4,7 +4,7 @@ Reproducibility code for *"Single-cell RNA sequencing of CD45+ lung cells reveal
 
 CD45+-enriched single-cell RNA-seq of a neonatal mouse hyperoxia model of BPD (32,780 cells, 4 pooled libraries, 2 per exposure), with cross-dataset validation in mouse and human BPD, nominating galectin-3 (*Lgals3* / LGALS3) as a candidate therapeutic target.
 
-**Data:** <https://doi.org/10.5281/zenodo.XXXXXXX> *(placeholder — replace with the Zenodo DOI)*
+**Data:** <https://doi.org/10.5281/zenodo.23249196>
 
 Every panel in the paper is produced by exactly one script, and every script asserts the numbers quoted in the manuscript as it runs. A re-run that disagrees with the paper fails loudly rather than quietly producing different figures.
 
@@ -120,6 +120,8 @@ These are the places where the pipeline is not a pure function of its inputs. Ea
 See [`data/README.md`](data/README.md) for accessions, the directory layout and provenance of each file.
 
 In brief: single-cell data generated in this study are at GEO **GSE346853**; reanalyzed datasets are GEO **GSE151974** (Hurskainen et al., mouse hyperoxia), **GSE32472** and **GSE220135** (human blood), and LungMAP **LMEX0000004400** (human BPD). The exact processed objects the pipeline consumes are deposited on Zenodo at the DOI above, because several were processed before deposition and cannot be regenerated bit-for-bit from the raw accessions.
+
+Only Figures 2C, 5E, 7 and S1 need the external datasets. Figures 1, 3, 4, 5A–D, 6, S2 and S3 run from the frozen object alone — a 1.6 GB download rather than 8.2 GB.
 
 Two inputs are version-controlled in `data/frozen/` rather than downloaded, because nothing in this pipeline can regenerate them: the Open Targets annotation described above, and the GSE220135 sample metadata.
 
